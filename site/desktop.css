@@ -33,6 +33,12 @@ html, body {
   --paper: #d9d9d9;
   --paper-line: rgba(0, 0, 0, 0.075);
 
+  /* Fit factor for the 1672x941 canvas. desktop.js overrides this with the
+     exact value for the viewport; the static default here means the page
+     still renders centred and complete if the script is slow or blocked,
+     instead of collapsing or overflowing. */
+  --k: 0.5;
+
   /* Credit lines pick up the terminal green. Brighter and more saturated than
      the detail pages use, because this paper is grey rather than cream:
      78% saturation at 27% lightness, 3.8:1 against #d9d9d9. The footer's own
@@ -41,22 +47,38 @@ html, body {
 }
 
 /* --- the scaled canvas -------------------------------------------------- */
+/* #screen is sized to the FITTED dimensions (k * native), never the native
+   1672x941, so the element centred by the grid is always no larger than the
+   viewport. Centring a box that fits is rock-solid in every browser; centring
+   an oversized box that is then shrunk with transform is not, and produced
+   the off-centre / tilted rendering across Safari and others. The native-size
+   content lives in #world, scaled from the top-left corner to fill #screen. */
 
 #stage {
   position: fixed;
   inset: 0;
   display: grid;
   place-items: center;
+  overflow: hidden;
+  background: #000;
 }
 
 #screen {
   position: relative;
+  width: calc(1672px * var(--k));
+  height: calc(941px * var(--k));
+  overflow: hidden;
+  background: url('img/bg-sunset.png') center / 100% 100% no-repeat;
+}
+
+#world {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 1672px;
   height: 941px;
-  flex: none;
-  background: url('img/bg-sunset.png') center / 100% 100% no-repeat;
-  transform: scale(var(--k, 1));
-  transform-origin: center center;
+  transform: scale(var(--k));
+  transform-origin: top left;
 }
 
 /* Hard-edged only when the canvas is being enlarged; desktop.js sets this. */

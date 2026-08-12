@@ -1,46 +1,41 @@
-/* Fit the fixed 1672x941 canvas into whatever viewport we are given.
+/* Fit the 1672x941 canvas to the viewport.
    Landscape and portrait run out of different things: landscape runs out of
-   height first, portrait runs out of width. Taking the smaller of the two
-   ratios handles both without a second set of rules. */
+   height first, portrait runs out of width. The smaller of the two ratios
+   handles both.
+
+   --k drives two things in the CSS: the size of #screen (the visible, centred
+   box) and the scale of #world (the native-size content inside it). Because
+   both read the same variable they always match, and because #screen is sized
+   to the fitted dimensions it is never larger than the viewport, so the grid
+   centres it correctly in every browser.
+
+   No requestAnimationFrame: it is throttled or paused when the tab is not
+   visible, which previously left --k unset and the canvas at scale 1. The
+   value is set synchronously and refreshed from real, non-RAF events. */
 (function () {
   const screen = document.getElementById('screen');
   const W = 1672, H = 941;
-  let settled = false;
 
-  function measure() {
+  function fit() {
     const vv = window.visualViewport;
     const vw = (vv && vv.width) || window.innerWidth || document.documentElement.clientWidth;
     const vh = (vv && vv.height) || window.innerHeight || document.documentElement.clientHeight;
-    return [vw, vh];
-  }
-
-  function fit() {
-    const [vw, vh] = measure();
+    if (!vw || !vh) return;
     const k = Math.min(vw / W, vh / H);
-    /* Never write a zero or a NaN. The first call can land before the embedded
-       viewport reports a size, and a scale of 0 collapses the whole page to
-       nothing with no error anywhere to show for it. */
-    if (!isFinite(k) || k <= 0) return false;
+    if (!isFinite(k) || k <= 0) return;
     screen.style.setProperty('--k', k);
-    /* The background is a 1672px wide dithered pixel image. Nearest-neighbour
-       is right when we are enlarging it and wrong when we are shrinking it:
-       downsampling a fine dither with nearest-neighbour produces moire. */
+    /* Nearest-neighbour only when enlarging; downscaling a fine dither with it
+       produces moire. */
     screen.classList.toggle('is-upscaled', k >= 1);
-    return true;
   }
 
-  /* Keep asking until a real measurement arrives, then stop. */
-  (function attempt(tries) {
-    if (fit()) { settled = true; return; }
-    if (tries > 0) requestAnimationFrame(() => attempt(tries - 1));
-  })(60);
-
-  /* A plain resize listener is not enough: on phones the address bar showing
-     and hiding changes the viewport without always firing resize, and some
-     embedded browsers resize the frame rather than the window. */
+  fit();
   window.addEventListener('resize', fit);
   window.addEventListener('orientationchange', fit);
   window.addEventListener('load', fit);
   if (window.visualViewport) window.visualViewport.addEventListener('resize', fit);
+  /* ResizeObserver fires once immediately on observe and again on any change,
+     and unlike rAF it is not gated on tab visibility, so it reliably lands the
+     first correct measurement. */
   if (window.ResizeObserver) new ResizeObserver(fit).observe(document.documentElement);
 })();
