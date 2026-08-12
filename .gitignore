@@ -1,0 +1,32 @@
+# 默认忽略所有内容
+/*
+# 只放行 site/ 目录
+!/site/
+# 让 .gitignore 本身进仓库
+!/.gitignore
+
+# site/ 里排除 5 个废弃文件
+/site/crt.css
+/site/ocean.js
+/site/ocean-demo.html
+/site/type-test.html
+/site/poster.png
+
+# site/img 里排除未被任何页面引用的孤儿图片
+# 有可辨认真人、且未展示的堪景照(隐私)
+/site/img/recce-a.jpg
+/site/img/recce-b.jpg
+/site/img/recce-c.jpg
+/site/img/recce-d.jpg
+/site/img/recce-e.jpg
+# 旧的/中间产物,当前页面未引用
+/site/img/bg-ocean-detail.png
+/site/img/bg-ocean.png
+/site/img/earth-online-art.png
+/site/img/ocean-day.png
+/site/img/ocean-plate.png
+/site/img/ocean-sunset.png
+/site/img/card-bedroom.jpg
+/site/img/card-kitchen.jpg
+/site/img/card-livingroom.jpg
+/site/img/card-stairwell.jpg

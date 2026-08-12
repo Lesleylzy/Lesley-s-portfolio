@@ -1,0 +1,367 @@
+/* ==========================================================================
+   Home page: CRT desktop
+   --------------------------------------------------------------------------
+   The whole page is one fixed 1672x941 canvas, the native size of
+   img/bg-sunset.png, scaled to fit the viewport by desktop.js. Everything
+   inside is positioned in that coordinate system, so the windows stay locked
+   to the background no matter how the browser is resized.
+
+   Window chrome is rebuilt in CSS rather than cut from the reference image:
+   the reference text is placeholder gibberish, the ACCIDENT credit in it is
+   wrong, and image text cannot be selected, searched or switched to Chinese.
+   Only the parts of the reference that are genuinely painted are used as
+   sprites: the three film icons and the Earth Online illustration.
+   ========================================================================== */
+
+@import url('fonts.css');
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  background: #000;
+  overflow: hidden;
+}
+
+:root {
+  /* Window paper: light grey with horizontal pixel bars, the texture an old
+     web page tiled behind its content. Not white, which reads as a modern
+     card. The bars are 2px on a 6px pitch; the contrast is kept low because
+     the canvas is scaled by a fractional factor and a strong fine pattern
+     would moire. The terminal window opts out of both. */
+  --paper: #d9d9d9;
+  --paper-line: rgba(0, 0, 0, 0.075);
+
+  /* Credit lines pick up the terminal green. Brighter and more saturated than
+     the detail pages use, because this paper is grey rather than cream:
+     78% saturation at 27% lightness, 3.8:1 against #d9d9d9. The footer's own
+     #33d17a is not reusable here, it would land at 1.4:1 on this ground. */
+  --credit-green: #0f7a45;
+}
+
+/* --- the scaled canvas -------------------------------------------------- */
+
+#stage {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+}
+
+#screen {
+  position: relative;
+  width: 1672px;
+  height: 941px;
+  flex: none;
+  background: url('img/bg-sunset.png') center / 100% 100% no-repeat;
+  transform: scale(var(--k, 1));
+  transform-origin: center center;
+}
+
+/* Hard-edged only when the canvas is being enlarged; desktop.js sets this. */
+#screen.is-upscaled { image-rendering: pixelated; }
+
+/* --- window chrome ------------------------------------------------------ */
+
+.slot {
+  position: absolute;
+  transform: rotate(var(--tilt, 0deg));
+}
+
+.win {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  border: 2px solid #000;
+  background: var(--paper);
+  box-shadow: 3px 4px 0 rgba(0, 0, 0, 0.38);
+  animation: float var(--dur, 8s) ease-in-out var(--delay, 0s) infinite;
+  overflow: hidden;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(var(--rise, -10px)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .win, .avatar { animation: none; }
+}
+
+.win__bar {
+  flex: none;
+  height: 38px;
+  padding: 0 6px 0 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: linear-gradient(90deg, #2c3f9b 0%, #1e2f8c 60%, #182671 100%);
+  border-bottom: 2px solid #000;
+  color: #fff;
+}
+
+.win__title {
+  font-family: var(--font-ui);
+  font-size: 24px;
+  line-height: 38px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* the _ [] X cluster, drawn rather than cut: the sprite in the reference is
+   soft and would not survive being scaled with the canvas */
+.win__btns { display: flex; gap: 4px; flex: none; }
+
+.win__btn {
+  width: 22px;
+  height: 20px;
+  border: 2px solid #000;
+  background: #d6d3ca;
+  position: relative;
+}
+
+.win__btn::before,
+.win__btn::after {
+  content: '';
+  position: absolute;
+  background: #000;
+}
+
+.win__btn--min::before { left: 3px; right: 3px; bottom: 2px; height: 3px; }
+
+.win__btn--max::before { inset: 2px; border: 2px solid #000; background: none; }
+
+.win__btn--close::before,
+.win__btn--close::after {
+  left: 2px; right: 2px; top: 7px; height: 3px;
+}
+.win__btn--close::before { transform: rotate(45deg); }
+.win__btn--close::after  { transform: rotate(-45deg); }
+
+.win__body {
+  flex: 1;
+  min-height: 0;
+  padding: 12px;
+  display: flex;
+  gap: 12px;
+  overflow: hidden;
+  background-color: var(--paper);
+  background-image: repeating-linear-gradient(180deg,
+    var(--paper-line) 0 2px, transparent 2px 6px);
+}
+
+.win__body--flush { padding: 0; }
+
+/* decorative scrollbar, as drawn in the reference */
+.scrollbar {
+  flex: none;
+  width: 24px;
+  align-self: stretch;
+  border: 2px solid #000;
+  background: var(--paper);
+  display: flex;
+  flex-direction: column;
+}
+
+.scrollbar span {
+  display: block;
+  height: 20px;
+  border-bottom: 2px solid #000;
+  background: #d6d3ca;
+}
+
+.scrollbar span:last-child { border-bottom: 0; border-top: 2px solid #000; margin-top: auto; }
+
+.scrollbar i {
+  flex: 1;
+  background:
+    repeating-conic-gradient(#cfcbc2 0 25%, #fff 0 50%) 0 0 / 8px 8px;
+}
+
+/* --- window content ----------------------------------------------------- */
+
+.stack { display: flex; flex-direction: column; gap: 8px; min-width: 0; min-height: 0; flex: 1; }
+
+.w-head {
+  font: 700 30px/34px var(--font-pixel);
+  color: #101010;
+}
+
+.w-meta {
+  font: 700 20px/24px var(--font-pixel);
+  color: var(--credit-green);
+}
+
+.w-line {
+  font: 700 24px/28px var(--font-pixel);
+  color: #101010;
+}
+
+.w-sub {
+  font: 700 21px/25px var(--font-pixel);
+  color: #4a4a4a;
+}
+
+.row { display: flex; gap: 10px; align-items: flex-start; }
+
+.row img {
+  flex: none;
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  border: 2px solid #000;
+  image-rendering: pixelated;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-auto-rows: minmax(0, 1fr);
+  gap: 8px;
+  flex: 1;
+  min-height: 0;
+}
+
+.grid img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border: 2px solid #000;
+  display: block;
+}
+
+.posters {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 8px;
+  flex: 1;
+  min-height: 0;
+}
+
+.posters img { width: 100%; height: 100%; object-fit: cover; border: 2px solid #000; display: block; }
+.posters img:first-child { grid-row: span 2; }
+
+.earth {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  image-rendering: pixelated;
+}
+
+/* --- films list --------------------------------------------------------- */
+
+.films { display: flex; flex-direction: column; gap: 12px; flex: 1; min-width: 0; }
+
+.film { display: flex; gap: 12px; align-items: flex-start; }
+
+.film img {
+  flex: none;
+  width: 68px;
+  height: 68px;
+  border: 2px solid #000;
+  image-rendering: pixelated;
+}
+
+.film__t { font: 700 23px/27px var(--font-pixel); color: #101010; }
+.film__c { font: 700 19px/23px var(--font-pixel); color: var(--credit-green); }
+
+/* --- contact terminal --------------------------------------------------- */
+
+.win--term { background: #050e1d; }
+.win--term .win__bar { background: linear-gradient(90deg, #6b8794 0%, #506f81 55%, #3c5666 100%); }
+
+/* The terminal keeps its black screen: no paper colour, no pixel bars. */
+.win--term .win__body {
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+  padding: 8px 16px;
+  background-color: #050e1d;
+  background-image: none;
+}
+
+.term-line {
+  font: 700 27px/32px var(--font-pixel);
+  /* phosphor green, the colour a terminal actually was */
+  color: #33d17a;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+a.term-line:hover { color: #7cf3b4; text-decoration: underline; }
+
+/* --- avatar ------------------------------------------------------------- */
+
+.avatar-slot {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.avatar {
+  width: 100%;
+  /* The slot has no overflow clipping and only empty background sits above it,
+     so the bob can be large without hiding any of the drawing; keep the
+     avatar near full slot height for presence. */
+  height: calc(100% - 16px);
+  object-fit: contain;
+  /* Smooth sampling, not pixelated. The avatar is a hand-drawn illustration
+     displayed smaller than native and moving on the float; nearest-neighbour
+     re-snaps which source rows survive each frame, which crawls horizontal
+     bands across the face. The background keeps pixelated; this one drawing
+     does not. */
+  image-rendering: auto;
+  animation: float 6.5s ease-in-out infinite;
+  --rise: -22px;
+}
+
+/* --- links -------------------------------------------------------------- */
+
+a.slot { text-decoration: none; color: inherit; display: block; }
+
+a.slot .win { transition: box-shadow 120ms steps(2), filter 120ms steps(2); }
+
+a.slot:hover .win,
+a.slot:focus-visible .win {
+  box-shadow: 3px 4px 0 rgba(0, 0, 0, 0.38), 0 0 0 3px #ffd479;
+  filter: brightness(1.05);
+}
+
+a.slot:focus-visible { outline: none; }
+
+/* --- language button ---------------------------------------------------- */
+
+#lang {
+  position: absolute;
+  left: 60px;
+  top: 862px;
+  width: 92px;
+  height: 40px;
+  font: 400 22px/1 var(--font-ui);
+  color: #101010;
+  background: #d6d3ca;
+  border: 2px solid #000;
+  box-shadow: inset 2px 2px 0 #fff, inset -2px -2px 0 #7a7a7a, 3px 4px 0 rgba(0, 0, 0, 0.38);
+  cursor: pointer;
+  animation: float 7.5s ease-in-out 1.2s infinite;
+  --rise: -6px;
+}
+
+#lang:active { box-shadow: inset -2px -2px 0 #fff, inset 2px 2px 0 #7a7a7a; }
+
+/* --- portrait phones ---------------------------------------------------- */
+/* The desktop metaphor needs width. Below 760px the canvas is scaled to fit
+   the width and the leftover height is simply letterboxed, which keeps every
+   window legible instead of squeezing them. */
+
+@media (max-width: 760px) {
+  #screen { transform-origin: center center; }
+}

@@ -1,0 +1,162 @@
+/* ==========================================================================
+   Typography system: W95FA + Pixel Operator
+   --------------------------------------------------------------------------
+   Measured facts these rules are built on (read from the font binaries):
+
+   Pixel Operator   unitsPerEm 1600, every outline coordinate on a 100-unit
+                    grid, so one design pixel = 100 units = 1/16 em.
+                    It is only pixel-exact at 16px and its integer multiples
+                    (16 / 32 / 48 / 64). Any other size anti-aliases.
+                    ascent 1300 + descent 300 = 1600 exactly, but lineGap is
+                    72, so `line-height: normal` computes to 16.72px at 16px.
+                    Always set an integer line-height.
+
+   W95FA            unitsPerEm 1000, coordinates NOT on a pixel grid. It is a
+                    scalable outline recreation of the Win95 UI face, not a
+                    bitmap, so it anti-aliases at every size by design. That
+                    is correct for a title bar; it is why body text uses
+                    Pixel Operator instead.
+
+   Coverage         Pixel Operator has everything the English copy needs,
+                    including ( ) / @ , and the middle dot. W95FA has no
+                    middle dot, so never put `·` in a title bar.
+                    Neither font has arrows; draw the back arrow as CSS/SVG.
+
+   Licences         W95FA: SIL OFL 1.1. Pixel Operator: CC0 1.0.
+                    Both free for commercial use. Licence texts sit next to
+                    the font files in this directory.
+   ========================================================================== */
+
+@font-face {
+  font-family: 'W95FA';
+  src: url('fonts/W95FA.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: block;
+}
+
+@font-face {
+  font-family: 'Pixel Operator';
+  src: url('fonts/PixelOperator.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: block;
+}
+
+@font-face {
+  font-family: 'Pixel Operator';
+  src: url('fonts/PixelOperator-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: block;
+}
+
+/* Body face for the detail pages. Pixel Operator is a 16px bitmap design and
+   only lands crisp at 16 / 32 / 48; at the sizes long-form reading wants it
+   is either too small or enormous. IBM Plex Mono is an outline face, so it is
+   clean at 17px, and being monospace it keeps the terminal register.
+   SIL Open Font License 1.1. */
+@font-face {
+  font-family: 'IBM Plex Mono';
+  src: url('fonts/IBMPlexMono-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'IBM Plex Mono';
+  src: url('fonts/IBMPlexMono-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --font-ui: 'W95FA', 'Segoe UI', sans-serif;
+  --font-pixel: 'Pixel Operator', 'Courier New', monospace;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'Cascadia Mono', Consolas, monospace;
+
+  /* The only three body sizes allowed. Anything else loses the grid. */
+  --size-body: 16px;
+  --size-head: 32px;
+  --size-hero: 48px;
+
+  /* Integer line-heights, chosen as design-pixel multiples of the 16px em. */
+  --lh-body: 20px;
+  --lh-head: 36px;
+  --lh-hero: 52px;
+
+  --ui-blue: #0000a8;
+  --ui-face: #c0c0c0;
+  --ui-light: #ffffff;
+  --ui-shadow: #808080;
+  --ui-dark: #000000;
+}
+
+body {
+  font-family: var(--font-pixel);
+  font-size: var(--size-body);
+  line-height: var(--lh-body);
+  /* Stop the browser faux-bolding or faux-italicising a pixel face; synthesis
+     smears the outlines off the grid and is the usual cause of mushy text. */
+  font-synthesis: none;
+  /* Affects macOS only, harmless elsewhere. Windows crispness comes from the
+     16px grid above, not from this property. */
+  -webkit-font-smoothing: none;
+}
+
+/* --- type roles -------------------------------------------------------- */
+
+.t-body { font: 400 var(--size-body) / var(--lh-body) var(--font-pixel); }
+.t-bold { font: 700 var(--size-body) / var(--lh-body) var(--font-pixel); }
+.t-head { font: 700 var(--size-head) / var(--lh-head) var(--font-pixel); }
+.t-hero { font: 700 var(--size-hero) / var(--lh-hero) var(--font-pixel); }
+
+/* Metadata used to be set smaller. There is no crisp size below 16px in this
+   family, so small text is made with colour and letter-spacing instead. */
+.t-meta {
+  font: 400 var(--size-body) / var(--lh-body) var(--font-pixel);
+  letter-spacing: 1px;
+  opacity: 0.75;
+}
+
+/* --- Windows 95 chrome -------------------------------------------------- */
+
+.w95 {
+  background: var(--ui-face);
+  border: 1px solid var(--ui-dark);
+  box-shadow:
+    inset  1px  1px 0 var(--ui-light),
+    inset -1px -1px 0 var(--ui-shadow);
+}
+
+.w95__bar {
+  height: 22px;
+  padding: 0 4px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--ui-blue);
+  color: #fff;
+}
+
+/* Option A: the authentic Win95 UI face. Anti-aliased, smoother than the body. */
+.w95__title {
+  font-family: var(--font-ui);
+  font-size: 15px;
+  line-height: 22px;
+}
+
+/* Option B: same pixel grid as the body copy. Harder, more uniform. */
+.w95__title--pixel {
+  font-family: var(--font-pixel);
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 22px;
+}
+
+.w95__body {
+  background: #fff;
+  padding: 12px;
+}

@@ -1,0 +1,270 @@
+/* ==========================================================================
+   Detail pages: a scrolling document inside one window, over the plain ocean.
+   --------------------------------------------------------------------------
+   One column, 820px, shared by the text and every picture: same left edge,
+   same right edge, nothing sticking out. The window is sized from that, not
+   the other way round.
+
+   Body is IBM Plex Mono at 17px rather than Pixel Operator. Pixel Operator is
+   a 16px bitmap design and lands crisp only at 16 / 32 / 48, which for
+   long-form reading means either too small or enormous; an outline face is
+   clean at any size. Monospace keeps the terminal register of the rest of
+   the site. At 17px the advance is exactly 10px, so 820px is 82 characters.
+   ========================================================================== */
+
+@import url('fonts.css');
+
+:root {
+  --paper: #f4f1e6;
+  --ink: #101014;
+  --bar: #1e2f8c;
+  --barface: #d6d3ca;
+  --rule: #101014;
+
+  /* Section headings and the back control take the terminal green down to a
+     weight that holds on cream. The footer's #33d17a only works because it
+     sits on near black; on this paper it would be 1.4:1. */
+  --green: #1f7a4d;
+
+  /* The one column everything sits in. .wrap is this plus the window
+     padding, border and page gutter: 820 + 72 + 6 + 32. */
+  --measure: 820px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  min-height: 100%;
+  color: var(--ink);
+  /* Same artwork with the lettering repainted out of the baked menu bar, so
+     it does not double up with the HTML top bar, and contrast pulled to 80%
+     so the window reads clearly against it. The fish is still there. */
+  background: #06263a url('img/bg-ocean-detail-soft.png') center center / cover fixed no-repeat;
+  font-family: var(--font-mono);
+}
+
+/* --- site bar ----------------------------------------------------------- */
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 8px 18px;
+  background: var(--paper);
+  border-bottom: 3px solid var(--ink);
+  font: 400 24px/30px var(--font-ui);
+}
+
+.topbar a { color: var(--ink); text-decoration: none; }
+.topbar .home { display: flex; align-items: center; gap: 9px; }
+.topbar .home:hover { text-decoration: underline; }
+.topbar .fish { width: 30px; height: auto; }
+.topbar .meta { opacity: 0.85; text-align: right; }
+
+@media (max-width: 700px) { .topbar .meta { display: none; } }
+
+/* --- window ------------------------------------------------------------- */
+
+.wrap { max-width: 930px; margin: 30px auto 80px; padding: 0 16px; }
+
+.window {
+  background: var(--paper);
+  border: 3px solid var(--ink);
+  box-shadow: 7px 8px 0 rgba(0, 0, 0, 0.45);
+}
+
+/* Deliberately not sticky: the title bar is part of the document and scrolls
+   away with it, rather than following the reader down the page. */
+.window > .bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 6px 8px 6px 14px;
+  background: linear-gradient(90deg, #2c3f9b 0%, var(--bar) 60%, #182671 100%);
+  color: #fff;
+  border-bottom: 3px solid var(--ink);
+  font: 400 28px/36px var(--font-ui);
+}
+
+/* the three chrome boxes are replaced by one control that actually does
+   something: go back to the desktop */
+.barback {
+  flex: none;
+  width: 46px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  background: var(--barface);
+  border: 3px solid var(--ink);
+  box-shadow: inset 2px 2px 0 #fff, inset -2px -2px 0 #7a7a7a;
+  cursor: pointer;
+}
+
+.barback svg { width: 22px; height: 16px; display: block; }
+.barback:hover { background: #fff; }
+.barback:active { box-shadow: inset -2px -2px 0 #fff, inset 2px 2px 0 #7a7a7a; }
+
+.content { padding: 30px 36px 40px; }
+
+@media (max-width: 640px) { .content { padding: 20px 16px 28px; } }
+
+/* --- type --------------------------------------------------------------- */
+
+h1 { font: 700 34px/44px var(--font-mono); letter-spacing: 0; }
+
+.credit { margin-top: 10px; font: 400 15px/24px var(--font-mono); color: #4a4a4a; }
+
+.logline { margin-top: 18px; font: 400 17px/31px var(--font-mono); max-width: var(--measure); }
+
+h2 {
+  margin: 56px 0 26px;
+  font: 700 22px/30px var(--font-mono);
+  color: var(--green);
+  border-bottom: 4px solid var(--green);
+  padding-bottom: 8px;
+  display: inline-block;
+}
+
+p { font: 400 17px/31px var(--font-mono); margin-bottom: 22px; max-width: var(--measure); }
+
+/* Han characters are square, so 82 of them a line is far longer than 82 Latin
+   ones; a touch more size and leading keeps the block from packing solid. */
+
+:lang(zh) p,
+:lang(zh) .logline { font-size: 18px; line-height: 34px; }
+
+/* --- figures ------------------------------------------------------------ */
+
+figure { margin: 26px 0 30px; }
+
+figure img,
+canvas.magnify {
+  width: 100%;
+  display: block;
+  border: 3px solid var(--ink);
+  background: var(--paper);
+}
+
+canvas.magnify { touch-action: none; cursor: zoom-in; }
+
+/* Magnifiable figure: the canvas sits in a relative frame so the little
+   magnifier badge can pin to the image's top-right corner without covering
+   the caption below. The badge is the drawn glass Lesley supplied; it is the
+   only cue a viewer gets that the image zooms, so it stays visible. */
+.mag-frame { position: relative; line-height: 0; }
+
+.mag-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 34px;
+  height: 34px;
+  background: url('img/magnifier-icon.png') center / contain no-repeat;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.55));
+  opacity: 0.92;
+  pointer-events: none;
+}
+
+/* Stills in the Third Needle grid are cropped to 4:3 so they sit level with
+   the 4:3 render tiles beside them. */
+.crop43 { aspect-ratio: 4 / 3; object-fit: cover; }
+
+figcaption { margin-top: 10px; font: 400 15px/25px var(--font-mono); color: #5a5a5a; max-width: var(--measure); }
+
+.pair { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.trio { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.hero { display: grid; grid-template-columns: 1.35fr 1fr; gap: 18px; align-items: start; }
+
+@media (max-width: 640px) { .pair, .trio, .hero { grid-template-columns: 1fr; } }
+
+/* --- scene palette blocks ----------------------------------------------- */
+/* Photo and colour card are set to complementary aspect ratios so the two
+   cells come out exactly the same height; every block then lines up down the
+   page instead of stepping in and out. */
+
+.swatch { margin: 26px 0 44px; }
+
+.swatch__imgs {
+  display: grid;
+  grid-template-columns: 1.78fr 1fr;
+  gap: 16px;
+  align-items: start;
+}
+
+.swatch__photo,
+.swatch__card {
+  width: 100%;
+  display: block;
+  border: 3px solid var(--ink);
+  background: var(--paper);
+}
+
+.swatch__photo { aspect-ratio: 4 / 3; object-fit: cover; }
+.swatch__card  { aspect-ratio: 3 / 4; object-fit: cover; }
+
+.swatch h3 {
+  margin: 18px 0 8px;
+  font: 700 19px/28px var(--font-mono);
+}
+
+.swatch p { margin-bottom: 0; }
+
+@media (max-width: 640px) {
+  .swatch__imgs { grid-template-columns: 1fr; }
+  .swatch__card { aspect-ratio: auto; }
+}
+
+.note {
+  margin-top: 34px;
+  padding: 16px 18px;
+  background: #e7e3d4;
+  border: 3px solid var(--ink);
+  font: 400 16px/28px var(--font-mono);
+  max-width: var(--measure);
+}
+
+/* --- footer back button ------------------------------------------------- */
+
+.back {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 42px;
+  padding: 10px 20px;
+  background: var(--barface);
+  border: 3px solid var(--ink);
+  box-shadow: 4px 5px 0 rgba(0, 0, 0, 0.45);
+  color: var(--green);
+  text-decoration: none;
+  font: 400 17px/1 var(--font-mono);
+}
+
+.back:hover { background: #fff; }
+.back svg { width: 20px; height: 15px; flex: none; }
+
+/* --- language toggle ---------------------------------------------------- */
+
+.lang {
+  position: fixed;
+  left: 18px;
+  bottom: 18px;
+  z-index: 30;
+  width: 92px;
+  height: 40px;
+  background: var(--barface);
+  color: var(--ink);
+  border: 3px solid var(--ink);
+  box-shadow: 3px 4px 0 rgba(0, 0, 0, 0.45);
+  font: 400 22px/1 var(--font-ui);
+  cursor: pointer;
+}
+
+.lang:hover { background: #fff; }
+.lang:active { box-shadow: none; transform: translate(3px, 4px); }
