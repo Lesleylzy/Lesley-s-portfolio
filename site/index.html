@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Zhiyu (Lesley) Liu</title>
 <link rel="stylesheet" href="desktop.css">
+<link rel="stylesheet" href="fx.css">
 </head>
 <body>
 
@@ -84,23 +85,18 @@
     </div>
   </a>
 
-  <!-- Web Projects ----------------------------------------------------- -->
-  <a class="slot" href="https://earth-online-gamma.vercel.app" target="_blank" rel="noopener"
-     style="left:1178px; top:74px; width:366px; height:324px; --tilt:0.4deg; --dur:8s; --delay:0.8s; --rise:-9px;">
-    <div class="win">
-      <div class="win__bar">
-        <span class="win__title">Web Projects</span>
-        <span class="win__btns"><i class="win__btn win__btn--min"></i><i class="win__btn win__btn--max"></i><i class="win__btn win__btn--close"></i></span>
-      </div>
-      <div class="win__body win__body--flush">
-        <img class="earth" src="img/earth-online.png" alt="Earth Online">
-      </div>
-    </div>
-  </a>
+  <!-- Independent Projects: each project is its own link -->
+  <section class="slot projects-slot" aria-label="Independent Projects" style="left:1136px; top:60px; width:464px; height:354px; --tilt:0.4deg; --dur:8s; --delay:0.8s; --rise:-9px;">
+    <div class="win"><div class="win__bar"><span class="win__title" data-en="Independent Projects" data-zh="独立项目">Independent Projects</span><span class="win__btns" aria-hidden="true"><i class="win__btn win__btn--min"></i><i class="win__btn win__btn--max"></i><i class="win__btn win__btn--close"></i></span></div>
+    <div class="win__body project-list"><a class="project-row potato" href="https://potato-web-seven.vercel.app/" target="_blank" rel="noopener"><span class="project-image"><img src="img/potato-vote.webp" alt=""></span><span class="project-copy"><strong>POTATO 2026</strong><span data-en="Fictional election campaign website" data-zh="创意竞选网站">Fictional election campaign website</span></span><span class="project-arrow" aria-hidden="true">↗</span></a>
+<a class="project-row kinora" href="kinora.html"><span class="project-image"><img src="img/kinora-lamp.webp" alt=""></span><span class="project-copy"><strong>KINORA</strong><span data-en="Fictional brand &amp; advertising campaign" data-zh="创意品牌与广告企划">Fictional brand &amp; advertising campaign</span></span><span class="project-arrow" aria-hidden="true">↗</span></a>
+<a class="project-row earth-project" href="https://earth-online-gamma.vercel.app" target="_blank" rel="noopener"><span class="project-image"><img src="img/earth-globe.webp" alt=""></span><span class="project-copy"><strong>Earth Online</strong><span data-en="Web app" data-zh="网页应用">Web app</span></span><span class="project-arrow" aria-hidden="true">↗</span></a>
+</div></div>
+  </section>
 
   <!-- Short Films (not clickable, information only) --------------------- -->
   <div class="slot"
-       style="left:1160px; top:424px; width:452px; height:312px; --tilt:-0.3deg; --dur:9.6s; --delay:1.6s; --rise:-8px;">
+       style="left:1196px; top:448px; width:416px; height:288px; --tilt:-0.3deg; --dur:9.6s; --delay:1.6s; --rise:-8px;">
     <div class="win">
       <div class="win__bar">
         <span class="win__title">Short Films</span>
@@ -165,5 +161,6 @@
 
 <script src="desktop.js"></script>
 <script src="lang.js"></script>
+<script src="fx.js"></script>
 </body>
 </html>

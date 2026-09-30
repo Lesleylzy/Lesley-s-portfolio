@@ -1,0 +1,31 @@
+/* Cursor fish — a sticker fish that swims after the real pointer.
+   The native cursor is kept (so links stay easy to click); the fish is a
+   decorative follower on a pointer-events:none overlay above everything. */
+
+#fx {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+#fx-fish {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 41px;
+  height: auto;
+  /* face travel direction from a top-left anchor; JS writes the transform */
+  transform-origin: 50% 50%;
+  opacity: 0;
+  transition: opacity 260ms ease;
+  will-change: transform;
+  image-rendering: auto;
+}
+
+#fx-fish.is-on { opacity: 1; }
+
+/* No mouse to follow, or the viewer asked for less motion: no fish. */
+@media (hover: none), (pointer: coarse) { #fx { display: none; } }
+@media (prefers-reduced-motion: reduce) { #fx { display: none; } }
